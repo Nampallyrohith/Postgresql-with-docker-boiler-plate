@@ -1,11 +1,29 @@
 import express from "express";
 import { connectAndQuery } from "./services/db/client.js";
 import env from "./config.js";
+import cors from "cors";
 import routes from "./handlers/routes.js";
 
 const app = express();
 
 const PORT = env.PORT;
+const corsOptions: cors.CorsOptions = {
+  origin: (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void
+  ) => {
+    const allowedOrigins = env.CORS_ALLOWED_ORIGIN.split(",");
+
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
